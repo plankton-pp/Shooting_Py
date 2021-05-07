@@ -27,6 +27,23 @@ class Soldier(pygame.sprite.Sprite):
 		self.img =  pygame.transform.scale(img, (int(img.get_width()*scale), int(img.get_height() * scale)))
 		self.rect = self.img.get_rect()
 		self.rect.center = (x, y)
+
+	#function to move character
+	def move(self, moving_left, moving_right):
+		#reset movement variables
+		dx = 0
+		dy = 0
+
+		#assign movement variables if moving left or right
+		if moving_left:
+			dx = -self.speed
+		if moving_right:
+			dx = self.speed
+
+		#update rectangle position
+		self.rect.x += dx
+		self.rect.y += dy
+
 	#function to draw itself on window
 	def draw(self):
 		screen.blit(self.img, self.rect)
@@ -40,7 +57,7 @@ while run:
 	#draw player
 	player.draw()
 
-	#player.move(moving_left, moving_right)
+	player.move(moving_left, moving_right)
 	#loop check event
 	for event in pygame.event.get():
 		#check event to exit loop
@@ -61,7 +78,7 @@ while run:
 				moving_left = False
 			if event.key == pygame.K_d:
 				moving_right = False
-				
+
 	#update screen all the times
 	pygame.display.update()
 
