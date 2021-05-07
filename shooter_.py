@@ -27,6 +27,9 @@ class Soldier(pygame.sprite.Sprite):
 		self.img =  pygame.transform.scale(img, (int(img.get_width()*scale), int(img.get_height() * scale)))
 		self.rect = self.img.get_rect()
 		self.rect.center = (x, y)
+	#function to draw itself on window
+	def draw(self):
+		screen.blit(self.img, self.rect)
 
 #create soldier as them role
 player = Soldier(200, 200, 3, 5)
@@ -37,7 +40,7 @@ while run:
 	#draw player
 	player.draw()
 
-	player.move(moving_left, moving_right)
+	#player.move(moving_left, moving_right)
 	#loop check event
 	for event in pygame.event.get():
 		#check event to exit loop
