@@ -46,7 +46,22 @@ while run:
 		#check event to exit loop
 		if event.type == pygame.QUIT:
 			run = False
+		#keyboard pressed event
+		if event.type == pygame.KEYDOWN:
+			if event.key == pygame.K_a:
+				moving_left = True
+			if event.key == pygame.K_d:
+				moving_right = True
+			if event.key == pygame.K_ESCAPE:
+				run = False
 
+		#keyboard unpressed event // buntton released
+		if event.type == pygame.KEYDOWN:
+			if event.key == pygame.K_a:
+				moving_left = False
+			if event.key == pygame.K_d:
+				moving_right = False
+				
 	#update screen all the times
 	pygame.display.update()
 
