@@ -28,12 +28,17 @@ def draw_bg():
 class Soldier(pygame.sprite.Sprite):
 	#define type of soldier and its properties
 					#define img position , #define scale
-	def __init__(self, x, y, scale, speed):
+	def __init__(self, char_type, x, y, scale, speed):
 		pygame.sprite.Sprite.__init__(self)
+		#set char type
+		self.char_type = char_type
 		#set speed
 		self.speed = speed
+		#set direction and flip
+		self.direction = 1
+		self.flip = False
 		#load charactor img
-		img = pygame.image.load('img/player/Idle/0.png')
+		img = pygame.image.load(f'img/{self.char_type}/Idle/0.png')
 											#convert to int 
 											#change scale img
 		self.img =  pygame.transform.scale(img, (int(img.get_width()*scale), int(img.get_height() * scale)))
@@ -49,8 +54,12 @@ class Soldier(pygame.sprite.Sprite):
 		#assign movement variables if moving left or right
 		if moving_left:
 			dx = -self.speed
+			self.flip = True
+			self.direction = -1
 		if moving_right:
 			dx = self.speed
+			self.flip = False
+			self.direction = 1
 
 		#update rectangle position
 		self.rect.x += dx
@@ -60,10 +69,12 @@ class Soldier(pygame.sprite.Sprite):
 
 	#function to draw itself on window
 	def draw(self):
-		screen.blit(self.img, self.rect)
+					#Flip the image      #sourceIMG  #Flip_condition	#position to draw on screen
+		screen.blit(pygame.transform.flip(self.img, self.flip, False), self.rect)
 
 #create soldier as them role
-player = Soldier(200, 200, 3, 5)
+player = Soldier('player',200, 200, 3, 5)
+enemy = Soldier('enemy',200, 200, 3, 5)
 
 #run the window
 run = True
@@ -76,6 +87,7 @@ while run:
 
 	#draw player
 	player.draw()
+	enemy.draw()
 	player.move(moving_left, moving_right)
 
 	#loop check event
