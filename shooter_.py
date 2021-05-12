@@ -30,6 +30,8 @@ class Soldier(pygame.sprite.Sprite):
 					#define img position , #define scale
 	def __init__(self, char_type, x, y, scale, speed):
 		pygame.sprite.Sprite.__init__(self)
+		#set alive to char
+		self.alive = True
 		#set char type
 		self.char_type = char_type
 		#set speed
@@ -37,11 +39,37 @@ class Soldier(pygame.sprite.Sprite):
 		#set direction and flip
 		self.direction = 1
 		self.flip = False
-		#load charactor img
-		img = pygame.image.load(f'img/{self.char_type}/Idle/0.png')
+		#img array of character to play when it updated movement
+		self.animation_list = []
+		self.frame_index = 0
+		self.action = 0
+		#start time when create the character
+		self.update_time = pygame.time.get_ticks()
+		#load charactor img into img_array
+		#it's not the process to changed it the preparing item when start the game
+		#animate functio is update_animation() below
+		tmp_list = []
+		for i in range(5):
+			#load img
+			img = pygame.image.load(f'img/{self.char_type}/Idle/{i}.png')
 											#convert to int 
 											#change scale img
-		self.img =  pygame.transform.scale(img, (int(img.get_width()*scale), int(img.get_height() * scale)))
+			img =  pygame.transform.scale(img, (int(img.get_width()*scale), int(img.get_height() * scale)))
+			#appending img into array
+			tmp_list.append(img)
+		self.animation_list.append(tmp_list)
+		#set tmp list to empty
+		tmp_list = []
+		for i in range(6):
+			#load img
+			img = pygame.image.load(f'img/{self.char_type}/Run/{i}.png')
+											#convert to int 
+											#change scale img
+			img =  pygame.transform.scale(img, (int(img.get_width()*scale), int(img.get_height() * scale)))
+			#appending img into array
+			tmp_list.append(img)
+		self.animation_list.append(tmp_list)
+		self.img = self.animation_list[self.action][self.frame_index]
 		self.rect = self.img.get_rect()
 		self.rect.center = (x, y)
 
@@ -65,7 +93,29 @@ class Soldier(pygame.sprite.Sprite):
 		self.rect.x += dx
 		self.rect.y += dy
 
-
+	#update animation
+	def update_animation(self):
+		#every 100 millisec the char will be animated
+		#frequentcy time to update
+		#unit : millisec
+		ANIMATION_COOLDOWN = 100
+		#update image time depending on current frame
+		self.img = self.animation_list[self.action][self.frame_index]
+		#check if enough time has passed since the last update
+		if pygame.time.get_ticks() - self.update_time > ANIMATION_COOLDOWN:
+			self.update_time = pygame.time.get_ticks()
+			self.frame_index += 1
+		#check if frame index is out of bound of animationlist (img array)
+		if self.frame_index >= len(self.animation_list[self.action]):
+			self.frame_index = 0
+	#update action
+	def update_action(self, new_action):
+		#check if the new action is different to the previous on
+		if new_action != self.action:
+			self.action = new_action
+			#update the animation setting
+			self.frame_index = 0
+			self.update_time = pygame.time.get_ticks()
 
 	#function to draw itself on window
 	def draw(self):
@@ -73,8 +123,10 @@ class Soldier(pygame.sprite.Sprite):
 		screen.blit(pygame.transform.flip(self.img, self.flip, False), self.rect)
 
 #create soldier as them role
+#player
 player = Soldier('player',200, 200, 3, 5)
-enemy = Soldier('enemy',200, 200, 3, 5)
+#enemy
+enemy = Soldier('enemy',700, 200, 3, 5)
 
 #run the window
 run = True
@@ -85,9 +137,20 @@ while run:
 	#draw bg
 	draw_bg()
 
+	player.update_animation()
 	#draw player
 	player.draw()
 	enemy.draw()
+
+	#update player actions
+	#change stage to run
+	#stage 0 = idle
+	#stage 1 = running
+	if moving_right or moving_left:
+		player.update_action(1)
+	#change stage to idle
+	else:
+		player.update_action(0)
 	player.move(moving_left, moving_right)
 
 	#loop check event
